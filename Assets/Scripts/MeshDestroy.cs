@@ -71,7 +71,7 @@ public class MeshDestroy : MonoBehaviour
     public void Die()
     {
         //AudioSource.PlayClipAtPoint(hitSound, pos);
-
+        GameManager.IncreaseScore(5);
         var hitEffectObj = Instantiate(hitEffect, transform.position, transform.rotation);
         Destroy(hitEffectObj, 2);
         Destroy(gameObject);

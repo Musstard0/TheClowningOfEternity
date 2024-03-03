@@ -9,13 +9,15 @@
 using UnityEngine;
 using System.Collections;
 
+using UnityEngine.UI;
+
 public class Health : MonoBehaviour
 {
 	public bool canDie = true;					// Whether or not this health can die
 	
 	public float startingHealth = 100.0f;		// The amount of health to start with
 	public float maxHealth = 100.0f;			// The maximum amount of health
-	private float currentHealth;				// The current ammount of health
+	public float currentHealth;				// The current ammount of health
 
 	public bool replaceWhenDead = false;		// Whether or not a dead replacement should be instantiated.  (Useful for breaking/shattering/exploding effects)
 	public GameObject deadReplacement;			// The prefab to instantiate when this GameObject dies
@@ -25,7 +27,9 @@ public class Health : MonoBehaviour
 	public bool isPlayer = false;				// Whether or not this health is the player
 	public GameObject deathCam;					// The camera to activate when the player dies
 
-	private bool dead = false;					// Used to make sure the Die() function isn't called twice
+	private bool dead = false;                  // Used to make sure the Die() function isn't called twice
+
+	public Slider healthSlider;
 
 	// Use this for initialization
 	void Start()
@@ -38,7 +42,9 @@ public class Health : MonoBehaviour
 	{
 		// Change the health by the amount specified in the amount variable
 		currentHealth += amount;
-
+		healthSlider.value = currentHealth; // Clamp value between 0 and maxHealth
+		//float fillAmount = counter / maxTime;
+		//timerSlider.value = fillAmount;
 		// If the health runs out, then Die.
 		if (currentHealth <= 0 && !dead && canDie)
 			Die();

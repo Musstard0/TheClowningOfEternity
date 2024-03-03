@@ -27,30 +27,30 @@ public class WeaponSystem : MonoBehaviour
 	void Update()
 	{
 		// Allow the user to instantly switch to any weapon
-		if (Input.GetButtonDown("Weapon 1"))
-			SetActiveWeapon(0);
-		if (Input.GetButtonDown("Weapon 2"))
-			SetActiveWeapon(1);
-		if (Input.GetButtonDown("Weapon 3"))
-			SetActiveWeapon(2);
-		if (Input.GetButtonDown("Weapon 4"))
-			SetActiveWeapon(3);
-		if (Input.GetButtonDown("Weapon 5"))
-			SetActiveWeapon(4);
-		if (Input.GetButtonDown("Weapon 6"))
-			SetActiveWeapon(5);
-		if (Input.GetButtonDown("Weapon 7"))
-			SetActiveWeapon(6);
-		if (Input.GetButtonDown("Weapon 8"))
-			SetActiveWeapon(7);
-		if (Input.GetButtonDown("Weapon 9"))
-			SetActiveWeapon(8);
+		//if (Input.GetButtonDown("Weapon 1"))
+		//	SetActiveWeapon(0);
+		//if (Input.GetButtonDown("Weapon 2"))
+		//	SetActiveWeapon(1);
+		//if (Input.GetButtonDown("Weapon 3"))
+		//	SetActiveWeapon(2);
+		//if (Input.GetButtonDown("Weapon 4"))
+		//	SetActiveWeapon(3);
+		//if (Input.GetButtonDown("Weapon 5"))
+		//	SetActiveWeapon(4);
+		//if (Input.GetButtonDown("Weapon 6"))
+		//	SetActiveWeapon(5);
+		//if (Input.GetButtonDown("Weapon 7"))
+		//	SetActiveWeapon(6);
+		//if (Input.GetButtonDown("Weapon 8"))
+		//	SetActiveWeapon(7);
+		//if (Input.GetButtonDown("Weapon 9"))
+		//	SetActiveWeapon(8);
 
 		// Allow the user to scroll through the weapons
-		if (Input.GetAxis("Mouse ScrollWheel") > 0)
-			NextWeapon();
-		if (Input.GetAxis("Mouse ScrollWheel") < 0)
-			PreviousWeapon();
+		//if (Input.GetAxis("Mouse ScrollWheel") > 0)
+		//	NextWeapon();
+		//if (Input.GetAxis("Mouse ScrollWheel") < 0)
+		//	PreviousWeapon();
 	}
 
 	void OnGUI()

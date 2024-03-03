@@ -217,7 +217,7 @@ public class SceneController : MonoBehaviour
     {
         levelToLoad = sceneBuildIndex;
         animator.SetBool("IsFadingOut", true);
-        //StartCoroutine(StartFadeAudio(1.0f, 0));
+        StartCoroutine(StartFadeAudio(1.0f, 0));
     }
 
     private IEnumerator StartFadeAudio(float duration, float targetVolume)
