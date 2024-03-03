@@ -45,7 +45,7 @@ public class SceneController : MonoBehaviour
     [Space(10)]
 
     [SerializeField] Slider loadingBar;
-    [SerializeField] AudioSource audioSource;
+    //[SerializeField] AudioSource audioSource;
     [SerializeField] float loadingDelta = 0.1f;
 
     private Animator animator;
@@ -185,7 +185,10 @@ public class SceneController : MonoBehaviour
 
     public void LoadGame()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         FadeAndLoadScene(1);
+        
     }
 
     public void ContinueGame()
@@ -247,7 +250,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(false);
         aboutGamePanel.SetActive(true);
 
-        titleText.text = "About";
+        titleText.text = "Авторы";
         backButton.SetActive(true);
     }
 
@@ -258,7 +261,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(false);
         characterSelectionPanel.SetActive(true);
 
-        titleText.text = "Character Selection";
+        titleText.text = "Начать Клоунаду";
         backButton.SetActive(true);
     }
 
@@ -270,7 +273,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(true);
         mainMenuPanel.SetActive(true);
         
-        titleText.text = "The Clowning Of Eternity";
+        titleText.text = "The clowing of eternity";
         backButton.SetActive(false);
     }
 
@@ -309,11 +312,19 @@ public class SceneController : MonoBehaviour
         
         if(setActive)
         {
+            foreach(var obj in FindObjectsOfType<AudioSource>())
+            {
+                obj.Pause();
+            }
             weaponSystems = FindObjectOfType<WeaponSystem>();
             weaponSystems.gameObject.SetActive(false);
         }
         else
         {
+            foreach(var obj in FindObjectsOfType<AudioSource>())
+            {
+                obj.Play();
+            }
             weaponSystems.gameObject.SetActive(true);
         }
         isGamePaused = setActive;
@@ -364,10 +375,10 @@ public class SceneController : MonoBehaviour
     {
         levelToLoad = sceneBuildIndex;
         animator.SetBool("IsFadingOut", true);
-        StartCoroutine(StartFadeAudio(1.0f, 0));
+        //StartCoroutine(StartFadeAudio(1.0f, 0));
     }
 
-    private IEnumerator StartFadeAudio(float duration, float targetVolume)
+    /*private IEnumerator StartFadeAudio(float duration, float targetVolume)
     {
         float currentTime = 0;
         float start = audioSource.volume;
@@ -378,7 +389,7 @@ public class SceneController : MonoBehaviour
             yield return null;
         }
         yield break;
-    }
+    }*/
 
     #endregion
 }
