@@ -122,26 +122,29 @@ public class SceneController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Escape)) 
         {
-            if(!pausePanel.activeSelf && !isMainMenuActive && !loadingPanel.activeSelf 
-                && !fadeImage.activeSelf && isPlaySceneActive)
-            {
-                SetPauseScreen(true);
-            }
-            else if(pausePanel.activeSelf)
-            {
-                AnimContinueGame();
-            }
-
-            if(isCutscenePlaying)
-            {
-                /*foreach (var audio in FindObjectsOfType<AudioSource>())
-                {
-                    StartCoroutine(StartFadeAudio(1.0f, 0, audio));
-                }*/
-            }
+            PauseGame();
         }
     }
+    public void PauseGame()
+    {
+        if (!pausePanel.activeSelf && !isMainMenuActive && !loadingPanel.activeSelf
+                && !fadeImage.activeSelf && isPlaySceneActive)
+        {
+            SetPauseScreen(true);
+        }
+        else if (pausePanel.activeSelf)
+        {
+            AnimContinueGame();
+        }
 
+        if (isCutscenePlaying)
+        {
+            /*foreach (var audio in FindObjectsOfType<AudioSource>())
+            {
+                StartCoroutine(StartFadeAudio(1.0f, 0, audio));
+            }*/
+        }
+    }
 
     #region Public Methods
 
@@ -299,7 +302,7 @@ public class SceneController : MonoBehaviour
 
     #region Private Methods
 
-    private void SetPauseScreen(bool setActive)
+    public void SetPauseScreen(bool setActive)
     {
         pausePanel.SetActive(setActive);
         
