@@ -15,6 +15,6 @@ public class TimedObjectDestroyer : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		Destroy(gameObject);
+		Destroy(gameObject, lifeTime);
 	}
 }

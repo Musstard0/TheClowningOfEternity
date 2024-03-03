@@ -37,8 +37,8 @@ public class MeshDestroy : MonoBehaviour
         objectSize = (transform.localScale.x + transform.localScale.y + transform.localScale.z) / 3;
 
         CutCascades = CalculatePartsCount();
-        hitEffect = Resources.Load<GameObject>("HitEffect_A");
-        hitSound = Resources.Load<AudioClip>("hit_sfx");
+        //hitEffect = Resources.Load<GameObject>("HitEffect_A");
+        //hitSound = Resources.Load<AudioClip>("hit_sfx");
         if (isPart)
         {
             StartCoroutine(RemoveComponentsAfterDelay(lifeTime));
@@ -66,27 +66,20 @@ public class MeshDestroy : MonoBehaviour
     }
     public void Damaged()
     {
-    }
-    void OnCollisionEnter(Collision collision)
-    {
-        if(!isPart && (collision.transform.tag == "Player" ||  collision.transform.tag == "Breakable" || collision.transform.tag == "Pickable" || collision.transform.tag == "Ground"))
-        {
-            ContactPoint contact = collision.contacts[0];
-            Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
-            Vector3 pos = contact.point;
 
-            DestroyMesh(pos,rot);
-        }
+    }
+    public void Die()
+    {
+        //AudioSource.PlayClipAtPoint(hitSound, pos);
+
+        var hitEffectObj = Instantiate(hitEffect, transform.position, transform.rotation);
+        Destroy(hitEffectObj, 2);
+        Destroy(gameObject);
+        //DestroyMesh(transform.position,transform.rotation);        
     }
  
     public void DestroyMesh(Vector3 pos, Quaternion rot)
     {
-
-        AudioSource.PlayClipAtPoint(hitSound, pos);
-
-        var hitEffectObj = Instantiate(hitEffect, pos, rot);
-        Destroy(hitEffectObj, 2);
-
         var originalMesh = GetComponent<MeshFilter>().mesh;
         originalMesh.RecalculateBounds();
         var parts = new List<PartMesh>();
