@@ -32,36 +32,36 @@ public class FirstPersonCharacter : MonoBehaviour
 		grounded = true;
 		rayHitComparer = new RayHitComparer();
 
-		if (lockCursor)
-		{
-			Cursor.lockState = CursorLockMode.Locked;
-			Cursor.visible = false;
-		}
-		else
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-		}
+		//if (lockCursor)
+		//{
+		//	Cursor.lockState = CursorLockMode.Locked;
+		//	Cursor.visible = false;
+		//}
+		//else
+		//{
+		//	Cursor.lockState = CursorLockMode.None;
+		//	Cursor.visible = true;
+		//}
 	}
 
 	void OnDisable()
 	{
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
+		//Cursor.lockState = CursorLockMode.None;
+		//Cursor.visible = true;
 	}
 	
 	void Update()
 	{
-		if (Input.GetMouseButtonUp(0))
-		{
-			Cursor.lockState = CursorLockMode.Locked;
-			Cursor.visible = false;
-		}
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
+		//if (Input.GetMouseButtonUp(0))
+		//{
+		//	Cursor.lockState = CursorLockMode.Locked;
+		//	Cursor.visible = false;
+		//}
+  //      if (Input.GetKeyDown(KeyCode.Escape))
+  //      {
+  //          Cursor.lockState = CursorLockMode.None;
+  //          Cursor.visible = true;
+  //      }
 	}
 	
 	
