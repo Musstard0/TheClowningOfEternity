@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     {
         score = 0;
 
+        Cursor.visible = false;
         instance = this;
     }
     
