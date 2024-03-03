@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,9 +24,12 @@ public class SceneController : MonoBehaviour
 
     [Header("Panels")]
     [SerializeField] GameObject mainMenuPanel;
+    [SerializeField] GameObject pauseButtonPanel;
     [SerializeField] GameObject aboutGamePanel;
     [SerializeField] GameObject characterSelectionPanel;
     [SerializeField] GameObject loadingPanel;
+    [SerializeField] GameObject fadeImage;
+    [SerializeField] GameObject pausePanel;
     [SerializeField] GameObject backButton;
     [SerializeField] TMP_Text titleText;
     [Space(10)]
@@ -35,6 +39,8 @@ public class SceneController : MonoBehaviour
     [SerializeField] GameObject maskGameObject;
     [SerializeField] GameObject LeftMaskGameObject;
     [SerializeField] GameObject RightMaskGameObject;
+    [SerializeField] GameObject LeftPauseMaskGameObject;
+    [SerializeField] GameObject RightPauseMaskGameObject;
     [SerializeField] Animator maskAnimator;
     [Space(10)]
 
@@ -43,12 +49,21 @@ public class SceneController : MonoBehaviour
     [SerializeField] float loadingDelta = 0.1f;
 
     private Animator animator;
+    private WeaponSystem weaponSystems = null;
     private int levelToLoad = 0;
     private float target = 0;
+
+    private bool isGamePaused = false;
+    private bool isMainMenuActive = true;
+    private bool isPlaySceneActive = false;
+    private bool isCutscenePlaying = false;
 
     private bool isCharacterSelectionShouldBeActive = false;
     private bool isAboutGameShouldBeActive = false;
     private bool isLoadGameShouldBeActive = false;
+    private bool contuineShouldHappen = false;
+    private bool loadMainMenuShouldHappen = false;
+    private bool quitGameShouldHappen = false;
 
     public bool IsCharacterSelectionShouldBeActive
     {
@@ -65,19 +80,36 @@ public class SceneController : MonoBehaviour
         get { return isLoadGameShouldBeActive; }
     }
 
+    public bool ContuineShouldHappen
+    {
+        get { return contuineShouldHappen; }
+    }
+
+    public bool LoadMainMenuShouldHappen
+    {
+        get { return loadMainMenuShouldHappen; }
+    }
+
+    public bool QuitGameShouldHappen
+    {
+        get { return quitGameShouldHappen; }
+    }
+
 
     void Awake()
     {
         if(instance == null) 
         {
             instance = this as SceneController;
-            DontDestroyOnLoad(gameObject);
         } 
         else 
         {
-            gameObject.SetActive(false);
-            Destroy(gameObject);
+            SceneController old = instance;
+            instance = this as SceneController;
+            old.gameObject.SetActive(false);
+            Destroy(old.gameObject);
         }
+        DontDestroyOnLoad(gameObject);
         animator = GetComponent<Animator>();
     }
 
@@ -86,6 +118,27 @@ public class SceneController : MonoBehaviour
         if (loadingPanel.activeSelf)
         {
             loadingBar.value = Mathf.MoveTowards(loadingBar.value, target, loadingDelta * Time.deltaTime);
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            if(!pausePanel.activeSelf && !isMainMenuActive && !loadingPanel.activeSelf 
+                && !fadeImage.activeSelf && isPlaySceneActive)
+            {
+                SetPauseScreen(true);
+            }
+            else if(pausePanel.activeSelf)
+            {
+                AnimContinueGame();
+            }
+
+            if(isCutscenePlaying)
+            {
+                /*foreach (var audio in FindObjectsOfType<AudioSource>())
+                {
+                    StartCoroutine(StartFadeAudio(1.0f, 0, audio));
+                }*/
+            }
         }
     }
 
@@ -100,7 +153,23 @@ public class SceneController : MonoBehaviour
 
     public void OnLoadMainMenu()
     {
+        pausePanel.SetActive(false);
+        isMainMenuActive = true;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        Time.timeScale = 0f;
         FadeAndLoadScene(0);
+    }
+
+    public void AnimOnLoadMainMenu()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = true;
+        quitGameShouldHappen = false;
+        OnPauseAnimButtonClicked();
     }
 
     public void OnLoadGameAnimCliced()
@@ -116,11 +185,30 @@ public class SceneController : MonoBehaviour
         FadeAndLoadScene(1);
     }
 
+    public void ContinueGame()
+    {
+        SetPauseScreen(false);
+    }
+
+    public void AnimContinueGame()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = true;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
+        OnPauseAnimButtonClicked();
+    }
+
     public void OnAboutAnimButtonClicked()
     {
         isAboutGameShouldBeActive = true;
         isCharacterSelectionShouldBeActive = false;
         isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
         OnAnimButtonClicked();
     }
 
@@ -129,6 +217,9 @@ public class SceneController : MonoBehaviour
         isAboutGameShouldBeActive = false;
         isCharacterSelectionShouldBeActive = true;
         isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
         OnAnimButtonClicked();
     }
 
@@ -137,6 +228,13 @@ public class SceneController : MonoBehaviour
         LeftMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
         RightMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
         mainMenuPanel.GetComponent<Animator>().SetTrigger("IsCombining");
+    }
+
+    public void OnPauseAnimButtonClicked()
+    {
+        LeftPauseMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
+        RightPauseMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
+        pauseButtonPanel.GetComponent<Animator>().SetTrigger("IsCombining");
     }
 
     public void AboutGame()
@@ -179,6 +277,18 @@ public class SceneController : MonoBehaviour
         Application.Quit();
     }
 
+    public void AnimQuitGame()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = true;
+
+        OnPauseAnimButtonClicked();
+    }
+
     public void OnFadeOutComplete()
     {
         LoadSceneAsync();
@@ -189,6 +299,35 @@ public class SceneController : MonoBehaviour
 
     #region Private Methods
 
+    private void SetPauseScreen(bool setActive)
+    {
+        pausePanel.SetActive(setActive);
+        
+        
+        if(setActive)
+        {
+            weaponSystems = FindObjectOfType<WeaponSystem>();
+            weaponSystems.gameObject.SetActive(false);
+        }
+        else
+        {
+            weaponSystems.gameObject.SetActive(true);
+        }
+        isGamePaused = setActive;
+
+        if(setActive)
+        {
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        Cursor.visible = setActive;
+    }
+
     private async void LoadSceneAsync()
     {
         loadingBar.value = 0;
@@ -197,6 +336,7 @@ public class SceneController : MonoBehaviour
         AsyncOperation operation = SceneManager.LoadSceneAsync(levelToLoad);
         operation.allowSceneActivation = false;
         loadingPanel.SetActive(true);
+        Time.timeScale = 1f;
 
         do
         {
@@ -211,6 +351,10 @@ public class SceneController : MonoBehaviour
         operation.allowSceneActivation = true;
         loadingPanel.SetActive(false);
         animator.SetBool("IsFadingOut", false);
+
+        isMainMenuActive = levelToLoad == 0;
+        isPlaySceneActive = levelToLoad != 0;
+
     }
 
     private void FadeAndLoadScene(int sceneBuildIndex)
