@@ -24,6 +24,7 @@ public class SceneController : MonoBehaviour
 
     [Header("Panels")]
     [SerializeField] GameObject mainMenuPanel;
+    [SerializeField] GameObject pauseButtonPanel;
     [SerializeField] GameObject aboutGamePanel;
     [SerializeField] GameObject characterSelectionPanel;
     [SerializeField] GameObject loadingPanel;
@@ -38,6 +39,8 @@ public class SceneController : MonoBehaviour
     [SerializeField] GameObject maskGameObject;
     [SerializeField] GameObject LeftMaskGameObject;
     [SerializeField] GameObject RightMaskGameObject;
+    [SerializeField] GameObject LeftPauseMaskGameObject;
+    [SerializeField] GameObject RightPauseMaskGameObject;
     [SerializeField] Animator maskAnimator;
     [Space(10)]
 
@@ -46,6 +49,7 @@ public class SceneController : MonoBehaviour
     [SerializeField] float loadingDelta = 0.1f;
 
     private Animator animator;
+    private WeaponSystem weaponSystems = null;
     private int levelToLoad = 0;
     private float target = 0;
 
@@ -57,6 +61,9 @@ public class SceneController : MonoBehaviour
     private bool isCharacterSelectionShouldBeActive = false;
     private bool isAboutGameShouldBeActive = false;
     private bool isLoadGameShouldBeActive = false;
+    private bool contuineShouldHappen = false;
+    private bool loadMainMenuShouldHappen = false;
+    private bool quitGameShouldHappen = false;
 
     public bool IsCharacterSelectionShouldBeActive
     {
@@ -73,19 +80,36 @@ public class SceneController : MonoBehaviour
         get { return isLoadGameShouldBeActive; }
     }
 
+    public bool ContuineShouldHappen
+    {
+        get { return contuineShouldHappen; }
+    }
+
+    public bool LoadMainMenuShouldHappen
+    {
+        get { return loadMainMenuShouldHappen; }
+    }
+
+    public bool QuitGameShouldHappen
+    {
+        get { return quitGameShouldHappen; }
+    }
+
 
     void Awake()
     {
         if(instance == null) 
         {
             instance = this as SceneController;
-            DontDestroyOnLoad(gameObject);
         } 
         else 
         {
-            gameObject.SetActive(false);
-            Destroy(gameObject);
+            SceneController old = instance;
+            instance = this as SceneController;
+            old.gameObject.SetActive(false);
+            Destroy(old.gameObject);
         }
+        DontDestroyOnLoad(gameObject);
         animator = GetComponent<Animator>();
     }
 
@@ -105,7 +129,7 @@ public class SceneController : MonoBehaviour
             }
             else if(pausePanel.activeSelf)
             {
-                SetPauseScreen(false);
+                AnimContinueGame();
             }
 
             if(isCutscenePlaying)
@@ -129,11 +153,23 @@ public class SceneController : MonoBehaviour
 
     public void OnLoadMainMenu()
     {
+        pausePanel.SetActive(false);
         isMainMenuActive = true;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
-        Time.timeScale = 1f;
+        Time.timeScale = 0f;
         FadeAndLoadScene(0);
+    }
+
+    public void AnimOnLoadMainMenu()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = true;
+        quitGameShouldHappen = false;
+        OnPauseAnimButtonClicked();
     }
 
     public void OnLoadGameAnimCliced()
@@ -154,11 +190,25 @@ public class SceneController : MonoBehaviour
         SetPauseScreen(false);
     }
 
+    public void AnimContinueGame()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = true;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
+        OnPauseAnimButtonClicked();
+    }
+
     public void OnAboutAnimButtonClicked()
     {
         isAboutGameShouldBeActive = true;
         isCharacterSelectionShouldBeActive = false;
         isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
         OnAnimButtonClicked();
     }
 
@@ -167,6 +217,9 @@ public class SceneController : MonoBehaviour
         isAboutGameShouldBeActive = false;
         isCharacterSelectionShouldBeActive = true;
         isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = false;
         OnAnimButtonClicked();
     }
 
@@ -175,6 +228,13 @@ public class SceneController : MonoBehaviour
         LeftMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
         RightMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
         mainMenuPanel.GetComponent<Animator>().SetTrigger("IsCombining");
+    }
+
+    public void OnPauseAnimButtonClicked()
+    {
+        LeftPauseMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
+        RightPauseMaskGameObject.GetComponent<Animator>().SetTrigger("IsCombining");
+        pauseButtonPanel.GetComponent<Animator>().SetTrigger("IsCombining");
     }
 
     public void AboutGame()
@@ -217,6 +277,18 @@ public class SceneController : MonoBehaviour
         Application.Quit();
     }
 
+    public void AnimQuitGame()
+    {
+        isAboutGameShouldBeActive = false;
+        isCharacterSelectionShouldBeActive = false;
+        isLoadGameShouldBeActive = false;
+        contuineShouldHappen = false;
+        loadMainMenuShouldHappen = false;
+        quitGameShouldHappen = true;
+
+        OnPauseAnimButtonClicked();
+    }
+
     public void OnFadeOutComplete()
     {
         LoadSceneAsync();
@@ -230,18 +302,16 @@ public class SceneController : MonoBehaviour
     private void SetPauseScreen(bool setActive)
     {
         pausePanel.SetActive(setActive);
-        foreach (var obj in FindObjectsOfType<MouseRotator>())
+        
+        
+        if(setActive)
         {
-            if(setActive)
-            {
-                obj.enabled = false;
-                //obj.gameObject.SetActive(false);
-            }
-            else
-            {
-                obj.enabled = true;
-                //obj.gameObject.SetActive(true);
-            }
+            weaponSystems = FindObjectOfType<WeaponSystem>();
+            weaponSystems.gameObject.SetActive(false);
+        }
+        else
+        {
+            weaponSystems.gameObject.SetActive(true);
         }
         isGamePaused = setActive;
 
@@ -266,6 +336,7 @@ public class SceneController : MonoBehaviour
         AsyncOperation operation = SceneManager.LoadSceneAsync(levelToLoad);
         operation.allowSceneActivation = false;
         loadingPanel.SetActive(true);
+        Time.timeScale = 1f;
 
         do
         {
@@ -283,6 +354,7 @@ public class SceneController : MonoBehaviour
 
         isMainMenuActive = levelToLoad == 0;
         isPlaySceneActive = levelToLoad != 0;
+
     }
 
     private void FadeAndLoadScene(int sceneBuildIndex)
