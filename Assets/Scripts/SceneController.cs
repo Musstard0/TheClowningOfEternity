@@ -273,7 +273,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(true);
         mainMenuPanel.SetActive(true);
         
-        titleText.text = "Покинуть Цирк";
+        titleText.text = "The clowing of eternity";
         backButton.SetActive(false);
     }
 
