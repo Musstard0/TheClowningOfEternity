@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,6 +27,8 @@ public class SceneController : MonoBehaviour
     [SerializeField] GameObject aboutGamePanel;
     [SerializeField] GameObject characterSelectionPanel;
     [SerializeField] GameObject loadingPanel;
+    [SerializeField] GameObject fadeImage;
+    [SerializeField] GameObject pausePanel;
     [SerializeField] GameObject backButton;
     [SerializeField] TMP_Text titleText;
     [Space(10)]
@@ -45,6 +48,11 @@ public class SceneController : MonoBehaviour
     private Animator animator;
     private int levelToLoad = 0;
     private float target = 0;
+
+    private bool isGamePaused = false;
+    private bool isMainMenuActive = true;
+    private bool isPlaySceneActive = false;
+    private bool isCutscenePlaying = false;
 
     private bool isCharacterSelectionShouldBeActive = false;
     private bool isAboutGameShouldBeActive = false;
@@ -87,6 +95,27 @@ public class SceneController : MonoBehaviour
         {
             loadingBar.value = Mathf.MoveTowards(loadingBar.value, target, loadingDelta * Time.deltaTime);
         }
+
+        if(Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            if(!pausePanel.activeSelf && !isMainMenuActive && !loadingPanel.activeSelf 
+                && !fadeImage.activeSelf && isPlaySceneActive)
+            {
+                SetPauseScreen(true);
+            }
+            else if(pausePanel.activeSelf)
+            {
+                SetPauseScreen(false);
+            }
+
+            if(isCutscenePlaying)
+            {
+                /*foreach (var audio in FindObjectsOfType<AudioSource>())
+                {
+                    StartCoroutine(StartFadeAudio(1.0f, 0, audio));
+                }*/
+            }
+        }
     }
 
 
@@ -100,6 +129,10 @@ public class SceneController : MonoBehaviour
 
     public void OnLoadMainMenu()
     {
+        isMainMenuActive = true;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        Time.timeScale = 1f;
         FadeAndLoadScene(0);
     }
 
@@ -114,6 +147,11 @@ public class SceneController : MonoBehaviour
     public void LoadGame()
     {
         FadeAndLoadScene(1);
+    }
+
+    public void ContinueGame()
+    {
+        SetPauseScreen(false);
     }
 
     public void OnAboutAnimButtonClicked()
@@ -189,6 +227,37 @@ public class SceneController : MonoBehaviour
 
     #region Private Methods
 
+    private void SetPauseScreen(bool setActive)
+    {
+        pausePanel.SetActive(setActive);
+        foreach (var obj in FindObjectsOfType<MouseRotator>())
+        {
+            if(setActive)
+            {
+                obj.enabled = false;
+                //obj.gameObject.SetActive(false);
+            }
+            else
+            {
+                obj.enabled = true;
+                //obj.gameObject.SetActive(true);
+            }
+        }
+        isGamePaused = setActive;
+
+        if(setActive)
+        {
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        Cursor.visible = setActive;
+    }
+
     private async void LoadSceneAsync()
     {
         loadingBar.value = 0;
@@ -211,6 +280,9 @@ public class SceneController : MonoBehaviour
         operation.allowSceneActivation = true;
         loadingPanel.SetActive(false);
         animator.SetBool("IsFadingOut", false);
+
+        isMainMenuActive = levelToLoad == 0;
+        isPlaySceneActive = levelToLoad != 0;
     }
 
     private void FadeAndLoadScene(int sceneBuildIndex)
