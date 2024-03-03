@@ -33,5 +33,17 @@ public class ImageMove : MonoBehaviour
         {
             sceneController.LoadGame();
         }
+        if(sceneController.ContuineShouldHappen)
+        {
+            sceneController.ContinueGame();
+        }
+        if(sceneController.LoadMainMenuShouldHappen)
+        {
+            sceneController.OnLoadMainMenu();
+        }
+        if(sceneController.QuitGameShouldHappen)
+        {
+            sceneController.QuitGame();
+        }
     }
 }
