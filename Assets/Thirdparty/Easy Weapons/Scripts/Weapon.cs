@@ -606,19 +606,8 @@ public class Weapon : MonoBehaviour
 
 			if (Physics.Raycast(ray, out hit, range))
 			{
-                if (hit.transform.tag == "Enemy")
-                {
-                    if (hit.collider.TryGetComponent(out EnemyController enemyController))
-                    {
-                        enemyController.Damaged();
-                    }
-                    if (hit.collider.TryGetComponent(out MeshDestroy meshDestroy))
-                    {
-                        meshDestroy.Damaged();
-                    }
-                }
-                // Warmup heat
-                float damage = power;
+				// Warmup heat
+				float damage = power;
 				if (warmup)
 				{
 					damage *= heat * powerMultiplier;

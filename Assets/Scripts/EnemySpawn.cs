@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnemySpawn : MonoBehaviour
 {
     public int EnemiesPerWave;
-    public GameObject Enemy;
+    public GameObject[] Enemies;
     
     public Transform[] SpawnPoints;
     public float TimeBetweenEnemies = 2f;
@@ -47,7 +47,7 @@ public class EnemySpawn : MonoBehaviour
     // Coroutine to spawn all of our enemies
     IEnumerator SpawnEnemies()
     {
-        GameObject enemy = Enemy;
+        GameObject enemy = Enemies[Random.Range(0,Enemies.Length)];
         while (_spawnedEnemies < _totalEnemiesInCurrentWave)
         {
             _spawnedEnemies++;

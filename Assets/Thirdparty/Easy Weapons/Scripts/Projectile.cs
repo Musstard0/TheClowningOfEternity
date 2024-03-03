@@ -137,11 +137,11 @@ public class Projectile : MonoBehaviour
 
 				// Un-comment the following section for Bloody Mess support
 				/*
-				if (col.collider.gameObject.GetComponent<Limb>())
+				if (col.collider.gameobject.getcomponent<limb>())
 				{
-					GameObject parent = col.collider.gameObject.GetComponent<Limb>().parent;
-					CharacterSetup character = parent.GetComponent<CharacterSetup>();
-					character.ApplyDamage(damage, col.collider.gameObject, weaponType, directionShot, Camera.main.transform.position);
+					gameobject parent = col.collider.gameobject.getcomponent<limb>().parent;
+					charactersetup character = parent.getcomponent<charactersetup>();
+					character.applydamage(damage, col.collider.gameobject, weapontype, directionshot, camera.main.transform.position);
 				}
 				*/
 			}
@@ -164,6 +164,23 @@ public class Projectile : MonoBehaviour
 				for (int i = 0; i <= clusterBombNum; i++)
 				{
 					Instantiate(clusterBomb, transform.position, transform.rotation);
+				}
+			}
+		}
+
+		// Find all colliders within a certain radius
+		Collider[] colliders = Physics.OverlapSphere(position, 2.5f);
+
+		// Iterate over them and check if they are enemies
+		foreach (Collider collider in colliders)
+		{
+			if (collider.CompareTag("Enemy"))
+			{
+				// Call the Damaged method on their EnemyController component
+				EnemyController enemyController = collider.GetComponent<EnemyController>();
+				if (enemyController != null)
+				{
+					enemyController.Damaged();
 				}
 			}
 		}

@@ -9,17 +9,21 @@ public class EnemyController : MonoBehaviour
     public float MaxHealth = 3f;
     private float hp;
     public float EnemySpeed = 0.05f;
+    public float JumpFrequency = 2;
     GameObject player;
     public bool grounded;
     Rigidbody rb;
     public float jumpForce = 800;
+
+    MeshDestroy destroyComponent;
     // Start is called before the first frame update
     void Start()
     {
+        destroyComponent = GetComponent<MeshDestroy>();
         rb = GetComponent<Rigidbody>();
         hp = MaxHealth;
         player = GameObject.FindGameObjectWithTag("Player");
-        StartCoroutine(Jump(0.3f));
+        StartCoroutine(Jump(JumpFrequency));
     }
 
     // Update is called once per frame
@@ -30,17 +34,15 @@ public class EnemyController : MonoBehaviour
     }
     void MoveToPlayer()
     {
-        ;
-        transform.position = Vector3.MoveTowards(transform.position, player.transform.position, EnemySpeed);
-        
+
+        //transform.position = Vector3.MoveTowards(transform.position, player.transform.position, EnemySpeed);
 
     }
     private void animateRotation()
     {
 
         // transform.Translate(0, 2, 0);
-        transform.LookAt(player.transform);
-        transform.Rotate(new Vector3(270, 0, 0));
+        //transform.Rotate(new Vector3(270, 0, 0));
     }
     IEnumerator Jump(float time)
     {
@@ -53,6 +55,8 @@ public class EnemyController : MonoBehaviour
         {
             if (grounded)
             {
+
+                transform.LookAt(player.transform);
                 //rb.velocity = new Vector3(0,0,0) ;
                 rb.AddRelativeForce(Vector3.forward * jumpForce);
             }
@@ -63,7 +67,7 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("BOOOOOOOOOM");
+            collision.gameObject.GetComponent<Health>().ChangeHealth(-5);
         }
         if(collision.gameObject.tag == "Bullet")
         {
@@ -75,7 +79,7 @@ public class EnemyController : MonoBehaviour
         hp -= 1;
         if (hp <= 0)
         {
-            Destroy(gameObject);
+            destroyComponent.Die();
         }
 
     }
