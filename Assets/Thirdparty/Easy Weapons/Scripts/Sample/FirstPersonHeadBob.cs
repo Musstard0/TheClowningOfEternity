@@ -117,10 +117,12 @@ public class FirstPersonHeadBob : MonoBehaviour {
 		float speedHeightFactor = 1 + (flatVelocity * bobHeightSpeedMultiplier);
 
 		// finally, set the position and rotation values
+		if (double.IsNaN(bobSwayFactor) || double.IsNaN(bobFactor * headBobHeight * headBobFade * speedHeightFactor)) return;
 		float xPos = -headBobSideMovement * bobSwayFactor;
 		float yPos = springPos * jumpLandMove + bobFactor*headBobHeight*headBobFade*speedHeightFactor;
 		float xTilt = -springPos*jumpLandTilt;
 		float zTilt = bobSwayFactor*headBobSwayAngle*headBobFade;
+		
 		head.localPosition = originalLocalPos + new Vector3(xPos, yPos, 0);
 		head.localRotation = Quaternion.Euler(xTilt,0,zTilt);
 
