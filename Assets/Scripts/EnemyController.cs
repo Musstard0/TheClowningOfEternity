@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
     public float MaxHealth = 3f;
     private float hp;
     public float EnemySpeed = 0.05f;
-    public float JumpFrequency = 2;
+    public float JumpFrequency = 3;
     GameObject player;
     public bool grounded;
     Rigidbody rb;
@@ -45,17 +45,14 @@ public class EnemyController : MonoBehaviour
         //transform.Rotate(new Vector3(270, 0, 0));
     }
     IEnumerator Jump(float time)
-    {
-
-        // Set the function as running
-
+    {        
         // Do the job until running is set to false
        // Debug.Log(grounded);
         while (true)
         {
             if (grounded)
             {
-
+                CheckPlayer();
                 transform.LookAt(player.transform);
                 //rb.velocity = new Vector3(0,0,0) ;
                 rb.AddRelativeForce(Vector3.forward * jumpForce);
@@ -63,6 +60,38 @@ public class EnemyController : MonoBehaviour
             yield return new WaitForSeconds(time);
         }
     }
+
+    void CheckPlayer()
+    {
+        // Define the layer mask to only consider the player layer
+
+        // Cast a ray from the character's position towards the player
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out hit, Mathf.Infinity) && Vector3.Distance(transform.position,player.transform.position) >=25)
+        {
+            // If the player is not in view
+            if (hit.collider.CompareTag("Player") == false)
+            {
+                // Disable the collider
+                GetComponent<Collider>().enabled = false;
+
+                // Enable the collider after a delay
+                StartCoroutine(EnableColliderAfterDelay(.25f));
+                // Make the character jump extremely high
+                rb.AddForce(Vector3.up * 10, ForceMode.Impulse);
+
+            }
+        }
+    }
+
+    IEnumerator EnableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Enable the collider
+        GetComponent<Collider>().enabled = true;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
