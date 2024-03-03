@@ -45,7 +45,7 @@ public class SceneController : MonoBehaviour
     [Space(10)]
 
     [SerializeField] Slider loadingBar;
-    [SerializeField] AudioSource audioSource;
+    //[SerializeField] AudioSource audioSource;
     [SerializeField] float loadingDelta = 0.1f;
 
     private Animator animator;
@@ -306,11 +306,19 @@ public class SceneController : MonoBehaviour
         
         if(setActive)
         {
+            foreach(var obj in FindObjectsOfType<AudioSource>())
+            {
+                obj.Pause();
+            }
             weaponSystems = FindObjectOfType<WeaponSystem>();
             weaponSystems.gameObject.SetActive(false);
         }
         else
         {
+            foreach(var obj in FindObjectsOfType<AudioSource>())
+            {
+                obj.Play();
+            }
             weaponSystems.gameObject.SetActive(true);
         }
         isGamePaused = setActive;
@@ -361,10 +369,10 @@ public class SceneController : MonoBehaviour
     {
         levelToLoad = sceneBuildIndex;
         animator.SetBool("IsFadingOut", true);
-        StartCoroutine(StartFadeAudio(1.0f, 0));
+        //StartCoroutine(StartFadeAudio(1.0f, 0));
     }
 
-    private IEnumerator StartFadeAudio(float duration, float targetVolume)
+    /*private IEnumerator StartFadeAudio(float duration, float targetVolume)
     {
         float currentTime = 0;
         float start = audioSource.volume;
@@ -375,7 +383,7 @@ public class SceneController : MonoBehaviour
             yield return null;
         }
         yield break;
-    }
+    }*/
 
     #endregion
 }
