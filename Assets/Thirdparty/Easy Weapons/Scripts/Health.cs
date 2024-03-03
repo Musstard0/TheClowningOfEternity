@@ -31,9 +31,11 @@ public class Health : MonoBehaviour
 
 	public Slider healthSlider;
 
+	public SceneController sceneController;
 	// Use this for initialization
 	void Start()
 	{
+		sceneController = GameObject.FindObjectOfType<SceneController>();
 		// Initialize the currentHealth variable to the value specified by the user in startingHealth
 		currentHealth = startingHealth;
 	}
@@ -68,6 +70,7 @@ public class Health : MonoBehaviour
 		if (isPlayer && deathCam != null)
 			deathCam.SetActive(true);
 
+		sceneController.PauseGame(); 
 		// Remove this GameObject from the scene
 		Destroy(gameObject);
 	}
