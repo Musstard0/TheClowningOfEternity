@@ -182,7 +182,10 @@ public class SceneController : MonoBehaviour
 
     public void LoadGame()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         FadeAndLoadScene(1);
+        
     }
 
     public void ContinueGame()
@@ -244,7 +247,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(false);
         aboutGamePanel.SetActive(true);
 
-        titleText.text = "About";
+        titleText.text = "Авторы";
         backButton.SetActive(true);
     }
 
@@ -255,7 +258,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(false);
         characterSelectionPanel.SetActive(true);
 
-        titleText.text = "Character Selection";
+        titleText.text = "Начать Клоунаду";
         backButton.SetActive(true);
     }
 
@@ -267,7 +270,7 @@ public class SceneController : MonoBehaviour
         RightMaskGameObject.SetActive(true);
         mainMenuPanel.SetActive(true);
         
-        titleText.text = "The Clowning Of Eternity";
+        titleText.text = "Покинуть Цирк";
         backButton.SetActive(false);
     }
 
